@@ -234,7 +234,7 @@ O PHP de fato é uma das linguagens de programação mais populares da  atualida
 
 ```
 
-````php
+```php
 
 if($valorCompra > 100){
  $valorFinal = $valorCompra * 0.9;

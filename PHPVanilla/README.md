@@ -263,3 +263,120 @@ if($valorCompra > 100){
 }
 
 ```
+
+## Aula do dia 14.08
+- Uso do `elseif` (If Encadeado) => estrutura usada para manipulação de dados em duas ou mais condicionais.
+Exemplo:Compras acima de 200 reias tem 15%de desconto, compras acima de 100 reias tem 10% de desconto e demais compras tem 5% desconto.
+
+```mermaid
+
+graph LR
+
+    A[Comando] --> B{Condição 1}
+    B --> |true| C[Ação 1]
+    B --> |false| D{Condição 2}
+    D --> |true| E[Ação 2]
+    D --> |false| F[Ação 3]
+
+```
+
+```php
+
+if($valorCompra > 200 {
+    $valorFinal = $valorCompra * 0.85;
+} elseif($valorCompra > 100) {
+    $valorFinal = $valorCompra * 0.9;
+} else {
+    $valorFinal = $valorCompra * 0.95;
+}
+
+```
+
+*obs*: sempre usar `elseif` para situações que precisam de mais de uma condição, ou seja,fazer encadeamnto das condições.
+
+- Uso *ERRADO* do if
+
+```php 
+
+if($valorCompra > 200) {
+    $valorFinal = $valorCompra * 0.85;
+}
+if($valorCompra > 100) {
+    $valorFinal = $valorCompra * 0.9;
+} else {
+    $valorFinal = $valorCompra * 0.95;
+}
+
+```
+---
+
+>Ele significa basicamente: "Se a primeira condição não for verdadeira, verifique esta outra condição."
+
+>Pense nele como:
+SE isso acontecer → faça isso
+SENÃO SE aquilo acontecer → faça aquilo
+SENÃO → faça outra coisa.
+
+#### Operadores ternários 
+
+Um atalho para a estrutura condicional `if/else, normalmente escrito em uma uníca linha de código.
+
+` condição ? verdadeira : falsa ` 
+
+Perfeito para a decisões curtas de uma linha de comando.
+
+Exemplo: Verficar se a pessoa é maior de idade (18)
+
+```php
+
+$idade = 10;
+//O fomrato é (condição) ? Verdadeiro : Falso;
+
+$status = ($iddae>=18) ? "Maior de idade" : "menor de idade";
+$status2 = ($idade>=60) ? "Idoso" : ($idade>=18) ? "Adulto" : "Criança" ;
+'
+
+echo $status //
+
+```
+
+#### Expressão Condicional `match` (PHP 8)
+
+No mercado atual de PHP, não se uma mais uma `Switch/Case` para chegar valores fixos, usa-se o `match`. Ele compara um valor e retoran diretamente o resultado caso atenda a condição.
+
+```mermaid
+
+graph TD
+    A[Valor] --> B{Condicional}
+    B --> C[Ação 1]
+    B --> D[Ação 2]
+    B --> E[Ação 3]
+    B --> F[Ação 4]
+    B --> G[Ação ...]
+    B --> H[Ação default]
+
+```
+
+>Usamos o `graph TD` quando queremos fazer um gráfico de cima pra baixo. Igual mapa mental
+
+#### Exemplo de aplicação: 
+Selecionar o dia da semana a partir de um Nº
+
+```php
+
+$diaSemanaNum = date("W"); // pega o Dia da Semana em formato numérico
+
+$nomeDiaSemana = match($diaSemanaNu) {
+    "0" => "Domingo",
+    "1" => "Segunda",
+    "2" => "Terça",
+    "3" => "Quarta",
+    "4" => "Quinta",
+    "5" => "Sexta",
+    "6" => "Sábado",
+    "default" => "Dia Inválido"
+};
+
+echo " Hoje é : $nomeDiaSemana";
+
+```

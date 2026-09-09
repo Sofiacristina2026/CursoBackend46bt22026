@@ -821,9 +821,80 @@ $produtos = [
 
 $produtosAjustados = array_map(fn($p) => $p["preco"] = $p["preco"]*1.1, $produtos);
 
+> Obs: para a função de filtragem, primeiro selecionamos a array e depois criamos a função de filtro. Para a função de mapeamento, primeiro criamos a função de transformação e depois aplicamos no array.
+
+#### Debugando um Array (Kit de PRimeiros Socorros)
+
+- `print_r`
+função usada para exibir informações sobre um array de forma legível em liguagem natural
+
+```php
+echo print_r($frutas);
+//array
+(
+    [0] => "maça",
+    [1] => "banana",
+    [2] => "laranja"
+)
 ```
 
+- `var_dump`
+Exibi com mais detalhes as informações de um array ou variável em PHP
 
+```php
+echo var_dump($frutas);
+// Mostrar Tudo: tipo de dados, o tamanho e o valor
+```
+---
+
+### Semana 6 - Processamento HTTP e Formulários Web
+#### Anatomia de um Formulário HTML para BackEnd
+
+*** Aula do dia 09.09 ***
+
+Antes do PHP processar qualquer informação, precisamos coletar informações no FrontEnd através de um `<form>`
+
+***Exemplo de `<form>` HTML ***
+
+```html
+<form action="processar.php" method="POST">
+    <label>Nome Completo</label>
+    <input type:"text" id-"campNome"
+    name="nomeUsuario"claceholder="Digite seu Nome">
+    <button type="submit">Cadastrar</button>
+</form>
+```
+
+**Os 3 pilares de um formularário***
+1. action="processa.php" -> O destino : Define qual script PHP no servidor receberá os dados 
+2. Método="POST" -> O transporte: Define a via de protocolo HTTP que será usadsa (GET ou POST)
+3. name="nomeUsuario" -> A etiqueta do Dado: é o nome da chave que o PHP usará no array associativo($_POST ["nomeUsuario"]).
+
+> Obs: Nunca Confundir `id` com `name`no input, o PHP ignora o `id`.
+
+#### O Protocolo HTTP
+
+Quando o usuário clica no botão `type="submit"`, o navegador compila todas as informações dos campos preenchido e dispara um pacote de comunicação padronizado pelo **Protocolo HTTP(Hypertext Transfer Protocol)**.
+
+**Os Formatos de Transferência**
+
+* **Método GET**: solcitar informações públicas e realizr buscas, mas altamente arriscado para dados privados.
+* **Método POST**: As informações viajam guardadas dentro do protocolo. 
+
+#### Testar o uso dos Protocolos HTTP
+
+OK
+
+#### GET vs. POST
+
+1. O Método GET(Consultas e Filtros)
+
+O  método `GET`é utilizado quando a intenção do cliente é **buscar ou filtrar dados** sem alterar o estado do servidor. Os dados enviados via `GET`são anexados diretamente ao final da URL na forma de uma **Query String**
+
+2. O método POST (Envio de Cargas Úteis e Mutações)
+
+O método `POST` é utilizado quando o formulário envia dados que devem ser processados para **criar ou modificar registros** no sistema (Ex: Cadastro de usuários, finalizações de compra, upload de arquivos)
+  
 
 
 

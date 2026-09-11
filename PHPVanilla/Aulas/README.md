@@ -894,12 +894,130 @@ O  método `GET`é utilizado quando a intenção do cliente é **buscar ou filtr
 2. O método POST (Envio de Cargas Úteis e Mutações)
 
 O método `POST` é utilizado quando o formulário envia dados que devem ser processados para **criar ou modificar registros** no sistema (Ex: Cadastro de usuários, finalizações de compra, upload de arquivos)
-  
 
+ *** Aula do dia 11.09 ***
 
+### As SuperGlobais
 
+As varivais SuperGlobaissão arrays internos pré-definidos que estão sempre acesiíveis em qualquer parte do scripr php, sem precisar declarar.
 
+- **$_GET**: Armazena dados passados pela URL via parâmetros de consulta(query string);
+- **$_POST**: Recolhe dados enviados por formulários usando métodos HTTP POST.
+- **$_SERVER**: Contém informações sobre o servidor, amboenete e caminhos de script
 
+**Porque usar `??` para obter dados da SuperGlobal**?
+
+Usmaos o Operador de Nulidade (Coalescência Nula) para verificar se o valor da varíavel ná é `null`, se for `null` atribuimos um outro valor para evitar erros no script.
+
+**Exemplo de uso**:
+
+Na primeira vez que uma página é aberta, o formulário ainda não foi enviado. Portanto, a chave pode não existir no array.
+
+```PHP
+$nome =$_POST["nome"];
+//Escrevendo dessa forma, o código pode gerar um aviso de erro.
+
+// A forma mais correta de escrita é :
+$nome =$_POST["nome"]?? "";
+//Se $_POST["nome"] não existir, use uma string vazia.
+
+//outra forma de verificar nulidade é usando if else
+if(isset($_POST["nome"])){
+    $nome = $_POST["nome"];
+} else{
+    $nome = "";
+}
+
+```
+---
+
+***Explicando do meu jeitinho***
+
+## Coalescência nula ??
+
+Basicamente, o ?? serve pra falar:
+
+> “Se tiver alguma coisa aqui, usa ela. Se não tiver (null), usa essa outra coisa.”
+
+Por exemplo:
+
+```PHP
+$nome = null;
+
+echo $nome ?? "Nome não informado";
+```
+
+> Aqui o PHP pensa:
+ 🤔 “O $nome tem alguma coisa?” Não. Ele está null.
+Então ele pega o que está depois do ??:
+
+Resultado: Nome não informado
+
+Agora olha:
+
+```php
+$nome = "Sofia";
+```
+
+echo $nome ?? "Nome não informado";
+
+O PHP pensa:
+
+> 🤔 “O $nome tem um valor?”
+
+Tem! Então ele usa Sofia e ignora o "Nome não informado".
+
+Resultado:
+
+> Sofia ⭐ Jeitinho fácil de lembrar
+
+Pensa no ?? como:
+
+“Se não tiver isso, usa isso aqui.”
+
+$nome ?? "Nome não informado"
+
+É praticamente:
+
+“Se $nome estiver vazio/nulo, coloca Nome não informado.”
+
+> Obs: Um detalhe importante: ?? verifica especificamente se o valor é null (ou se a variável não existe), não simplesmente se está vazia. Use também htmlspecialchars() ao exibir valor em HTML => converte caracteres especiais em entidades correspondentes em HTML, evitando que o código seja interpretado erradamente pelo navegador. É usado principalmente na segurança web para evitar ataques Cross-Site-Scripting(XSS)
+
+#### Validação de Dados no BackEnd é obrigátoria.
+
+Muitos desenvolvedores iniciantes acreditam que colocar atribuitos `required`, `type=email` ou `min=0` na <tag> do Html é suficinette para proteger o sistema. **Isso é uma ilusão!**.  Sempre fazer as validações de dados no código BackEnd.
+
+##### Funções Nativas Essenciais para Limpeza e Validação de Dados
+
+A validação no Back-End deve acontecer sempre antes do processamento de qualquer dado recebido pelo usuário. Abaixo está uma tabela resumida das funções nativas do PHP usadas com frequência para limpar, verificar e validar entradas de formulário.
+
+| Função | Descrição | Quando usar | Exemplo simples |
+| :--- | :--- | :--- | :--- |
+| `trim($valor)` | Remove espaços no início e no fim da string | Limpar texto digitado pelo usuário | `$nome = trim($_POST['nome'] ?? '');` |
+| `htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')` | Converte caracteres especiais em entidades HTML seguras | Exibir dados na tela sem risco de XSS | `echo htmlspecialchars($_POST['nome'] ?? '', ENT_QUOTES, 'UTF-8');` |
+| `filter_var($valor, FILTER_VALIDATE_EMAIL)` | Valida formato de e-mail | Campos de e-mail | `filter_var($email, FILTER_VALIDATE_EMAIL)` |
+| `filter_var($valor, FILTER_VALIDATE_INT)` | Verifica se o valor é inteiro válido | Idade, código, quantidade | `filter_var($_POST['idade'] ?? '', FILTER_VALIDATE_INT)` |
+| `filter_var($valor, FILTER_VALIDATE_FLOAT)` | Verifica se o valor é número decimal válido | Preço, peso, altura, salário | `filter_var($_POST['preco'] ?? '', FILTER_VALIDATE_FLOAT)` |
+| `isset($variavel)` | Verifica se uma variável existe e não é `null` | Garantir que o campo foi enviado | `if (isset($_POST['nome'])) { ... }` |
+| `empty($valor)` | Verifica se o valor está vazio | Campos obrigatórios | `if (empty($_POST['senha'])) { ... }` |
+| `strlen($valor)` | Retorna o tamanho da string | Exigir mínimo ou máximo de caracteres | `if (strlen($senha) < 6) { ... }` |
+| `in_array($valor, $lista, true)` | Verifica se o valor pertence a uma lista permitida | `select`, `radio`, opções válidas | `in_array($categoria, ['A','B','C'], true)` |
+| `is_numeric($valor)` | Confirma se o valor é numérico | Validação de número | `if (is_numeric($_POST['quantidade'])) { ... }` |
+| `preg_match($padrao, $valor)` | Valida por expressão regular | CPF, CEP, telefone, senha forte | `preg_match('/^\d{5}-\d{3}$/', $cep)` |
+| `filter_input(INPUT_POST, 'campo', FILTER_SANITIZE_SPECIAL_CHARS)` | Captura e limpa dados da requisição | Ler entradas com segurança | `$nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_SPECIAL_CHARS);` |
+
+#### Preservação de Estado em Formulários (*Sticky Form*)
+A técnica do **Sticky Form** consiste em imprimir de volta atribuito "value" do input os dados que o usúario acaba de digitar caso ocorra um erro de validação de dados.
+
+```php
+<div class="campo">
+    <label for="nome">Nome Completo</label>
+    <input type="text" id="nome" name="nome" 
+        value="<?= htmlspecialchars($dadosFormulario["nome"] ?? "")?>
+        class="<?= isset($erro["nome"]) ? "input-erro" : "" ?>">
+    <?php if (isset($erro["nome"])): ?>   
+     
+```
 
 
 

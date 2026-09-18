@@ -1018,6 +1018,91 @@ A técnica do **Sticky Form** consiste em imprimir de volta atribuito "value" do
     <?php if (isset($erro["nome"])): ?>   
      
 ```
+### Semana 7 - Segurança no Backend - Sanitização , Validação e Proteção contra xss
+
+#### 1º Mandamento do Desenvolvedor Backend -
+
+> Nunca confie no Usuário: Toda entrada de dados vindo de fora do servidor é potencialmenete malicioso até que seja rigorosamente validada, sanitizada e codificada.
+
+Quando você disponibiliza um campo de texto em um site, qualquer pessoa conectada a internet pode digitar códigos maliciosos em vez de texto. Se o código BackEnd pega esse texto diretamente sem nenhum tratamento, a ordem de execução de códigos abrirá porta para a invasão devastadoras do seu sistema.
+
+#### A Anatomia de um Ataque: O que é Cross-Site Scripting (XSS)
+
+O XSS ocorre quando uma aplicação web inclui dados não confiaveis em uma página web sem a devida validação ou escape de caracteres. Isso permite que um atacante execute scripts maliciosos(geralmente em javaScript) diretamente no navegador de outro usuário que visitam o site.
+
+**As Principais Modalidade de Ataques:**
+
+1. *Roubo de Sessão(Cookie Stealing)*: O JavaScript injetado lê os cookies de autenticação da vítima (documente.cookie) e os envia para o servidor do atacante , permitindo que ele faça login na conta da vítima sem precisar de senha.
+
+2. *Desconfiguração do Site(Defacement)*: Alterar visualmente o site, inserindo mensagens falsas, banners ofensivos ou formulários de login fraudulentos (phising interno).
+
+3. *Redirecionamento Malicioso*: Força o navegador da víima a abrir sites com vírus ou páginas clonadas de banco.
+
+4. *Captura de Teclas(Keylogger)*: Grava tudo o que a vítima digita enquanto a página estiver aberta.
+
+---
+
+**Os Vetores de Ataques Mais Frequentes:**
+
+Nem todo ataque XSS usa a tag óbvia `<script>`.
+Desenvolvedores que tentam bloquear XSS apenas "apagando a palavra script"são facilmente burlados por atacantes:
+
+| Vetor de injeção | Como funciona o ataque? |
+| :--- | :--- |
+|  `<script>alert('xss')</script>`| Injeção direta de bloco de script executável pelo navegador. |
+| `<img src="invalido.jpg" onerror="alert('XSS')">` | O navegador tenta carregar a imagem inexistente e dispara o evento `onerror` com o JavaScript. |
+| `<svg onload="alert('XSS')">` | O navegador renderiza o elemento gráfico SVG e executa o evento `onload`. |
+| `<a href="javascript:alert('XSS')">Clique</a>` | O clique no link executa a pseudo-URL com JavaScript em vez de abrir um site. |
+| `"><script>alert('XSS')</script>` | Usado quando o dado é impresso dentro de um `<input value="...">`, quebrando o atributo e injetando a tag. |
+
+
+#### **A Tríade da Defesa: Validação, Sanitização e Escapamento**
+
+```mermaid
+
+flowchart
+    A[Entrada de Dados GET/POST] 
+    B{1. Validação}
+    C[2. Sanitização]
+    D[Processamento]
+    E[3. Escapamento]
+    F[HTML]
+
+    A --> B
+    B -- (Inválido)-Rejeita e devolve o Erro --> A
+    B -- (Válido) --> C
+    C -- (Limpo e Formato) --> D
+    D --> E
+    E -- Converte caracteres antes do HTML --> F
+```
+
+1. **Vaalidação**: Verifica se o dado recebido atende aos requisitos exatos do sistema (tipo, tamanho, formato).
+
+ex: Verificar se o e-mail possui `@` e o dominio válido 
+(`filter_var($email, FILTER_VALIDATE_EMAIL)`).
+
+2. **Sanitização**: Transforma o dado para adequalo ao formato desejado, removendo caracteres indesejados.
+
+ex: Remover espaços no início e fim (`trim($nome)`)
+
+3. **Escapamento/Codificação de Saída**: é o ato de converter caracteres especiais de linguagem HTML em suas respectivas **Entiades HTML** no momento em que eles são impressos na tela.
+
+Ex: usar `htmlspecialchars()`
+
+### **A ferramenta principal: `htmlspecialchars()`**
+
+A função `htmlspecialchars()` é o principal mecanismo do PHP para neutralizar XSS na camda de apresentação
+
+**Como a conversão de entidades funciona?**
+
+| Caractere Original | Entidade HTML Gerada | Efeito no Navegador |
+| :---: | :---: | :--- |
+| `<` | `&lt;` (*Less Than*) | O navegador exibe `<` na tela, mas **não cria uma tag**. |
+| `>` | `&gt;` (*Greater Than*) | O navegador exibe `>` na tela sem fechar tags. |
+| `"` | `&quot;` (*Quotation Mark*) | Não quebra atributos HTML `<input value="...">`. |
+| `'` | `&#039;` ou `&apos;` | Protege strings envoltas em aspas simples. |
+| `&` | `&amp;` (*Ampersand*) | Evita interpretação incorreta de entidades. |
+
 
 
 

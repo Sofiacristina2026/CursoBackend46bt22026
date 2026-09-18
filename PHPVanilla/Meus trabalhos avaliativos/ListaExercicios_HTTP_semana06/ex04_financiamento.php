@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+//requisitos
+//campos:
+//Valor_veiculo (R),
+//valor_entrada(R)
+//numero_parcelas(select com opções: 12, 24, 26, 48, 60).
+
+// Regras de validação:
+// A entrada deve ser de pelo menos 255 do valor total do véiculo.
+// O número de parcelas deve ser uma das opções permitidas no select.
+
+// Regra do negócio: Juros de 1.5% ao mês sobre o saldo financiado
+// Exiba a mémoria de cálculo: Valor financiado, total de juros e valor de cada parcela formatado em real.      
+
 $valorVeiculo = $_POST['valor_veiculo'] ?? '';
 $valorEntrada = $_POST['valor_entrada'] ?? '';
 $numeroParcelas = $_POST['numero_parcelas'] ?? '';

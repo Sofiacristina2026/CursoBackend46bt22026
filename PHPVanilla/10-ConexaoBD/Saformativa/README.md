@@ -61,3 +61,6 @@ VALUES
 
 Crie o arquivo. Ajuste as chaves de acesso ao banco de dado
 
+Colocar o arquivo de configuração dentro do `. gitgnore`
+
+## Passo 5 : Contribuindo a classe Singleton e conexão com o Banco de Dados (`src/ConexãoBanco.php`)

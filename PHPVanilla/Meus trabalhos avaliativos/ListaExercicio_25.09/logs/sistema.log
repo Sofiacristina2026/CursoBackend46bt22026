@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Classe responsável por gerenciar a conexão única com o banco PostgreSQL via Singleton.
+ */
+final class ConexaoBanco
+{
+    private static ?PDO $instancia = null;
+
+    // Construtor privado impede a criação direta com "new"
+    private function __construct() {}
+
+    // Impede a clonagem da instância
+    private function __clone() {}
+
+    // Impede a desserialização do objeto
+    public function __wakeup(): void
+    {
+        throw new \Exception("Não é permitido desserializar um Singleton.");
+    }
+
+    /**
+     * Retorna a instância única da conexão PDO.
+     */
+    public static function obterConexao(string $caminhoConfig, string $ambiente = 'development'): PDO
+    {
+        if (self::$instancia === null) {
+            self::$instancia = self::criarConexaoPDO($caminhoConfig, $ambiente);
+        }
+
+        return self::$instancia;
+    }
+
+    /**
+     * Lê as configurações e instancia o objeto PDO.
+     */
+    private static function criarConexaoPDO(string $caminhoConfig, string $ambiente): PDO
+    {
+        $config = parse_ini_file($caminhoConfig, true);
+        if (!isset($config[$ambiente])) {
+            throw new \InvalidArgumentException("Ambiente '{$ambiente}' não configurado.");
+        }
+
+        $env = $config[$ambiente];
+        $dsn = sprintf("pgsql:host=%s;port=%s;dbname=%s", $env['db_host'], $env['db_port'], $env['db_name']);
+
+        // Opções recomendadas do PDO (segurança, erros e fetch padrão)
+        $opcoes = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+            PDO::ATTR_PERSISTENT         => false
+        ];
+
+        return new PDO($dsn, $env['db_user'], $env['db_pass'], $opcoes);
+    }
+}

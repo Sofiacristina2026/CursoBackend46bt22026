@@ -55,3 +55,4 @@ function executarSimulacaoLogs(): void
 }
 
 executarSimulacaoLogs();
+

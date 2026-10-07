@@ -1,3 +1,4 @@
+```php
 <?php
 declare(strict_types=1);
 //aplicação de página unica utilizando as variáveis superglobais ($_GET, $_POST, $_SERVER) junto com formulários HTML de método GET e POST
@@ -26,7 +27,7 @@ $email = ""; // receberá o valor do campo email para cadastro de email
 //busca pelo nome
 $buscaProduto = trim((string) ($_GET["produto"] ?? ""));
 //verificação/operador de nulidade de uma variável (coalescência nula)
-$precoMaximoTexto = trim((string) ($_GET["preco_maximo"])); // recebe o valor do input preco_maximo
+$precoMaximoTexto = trim((string) ($_GET["preco_maximo"] ?? "")); // recebe o valor do input preco_maximo
 
 
 $produtosFiltrado = $produtos; //copiando a lista de produtos para produtos filtrados
@@ -69,7 +70,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     //SE não exisitir ERROS, o cadastro será realizado
     if($erros === []){
         $mensagemSucesso = "Cadastro Realizado com Sucesso!";
-        $usuario = ["nome" =>4nome, "email" => $email];
+        $usuario = ["nome" => $nome, "email" => $email];
         array_push($cadastros,$usuario);
 
     }
@@ -92,12 +93,12 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         <section>
             <h2>Utilização de filtro pela URL (GET) </h2>
            
-            <form action="index.php" methdo="GET">
+            <form action="index.php" method="GET">
                 <label for="produto">Nomedo produto</label>
-                input type="text" name="produto" id="produto" placeholder="Buscar Produto">
+                <input type="text" name="produto" id="produto" placeholder="Buscar Produto">
 
                 <label for="preco_maximo">Preço Maxímo</label>
-                <imput type="number" name="preco_maximo" id="preco_maximo" step+"0.01" placeholder="100">
+                <input type="number" name="preco_maximo" id="preco_maximo" step="0.01" placeholder="100">
 
                 <button type="submit">Pesquisar</button>
             </form>
@@ -168,6 +169,5 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     </main>
     
 </body>
-</html> 
-            
-
+</html>
+```

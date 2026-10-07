@@ -1597,3 +1597,31 @@ if(password_verify($senhaInformada, $hashDoBanco)){
     //Senha Incorreta
 }
 ```
+>[Aviso|]
+> Nunca tente fazer (password_hash($senha) === $hashDoBanco)
+> Como o `password_hash` gera um salt aleatório a cada milisegundo, a comparação por igualdade **sempre será falso**
+> A Verifiação deve ser feita **exclusivamente** com a função `password_verify()`
+
+#### **Arquitetura de Autenticação: Middleware (guard)**
+
+Para impedir que visitantes não logados acessem páginas privadas ( como dashboard.php ou relatorios.php), criamos interceptadores chamados **Guards (Middlewares de Proteção)**.
+
+```mermaid
+flowchart TD
+    req["Requsição do Navegador<br/>GET(dashboard.php)"]--> guard["Middleware: guard.php"]
+
+    guard --> check{"$_SESSION[usiario_id existe?]"}
+    check -- Não --> kick["header(login.php)"]
+    check -- Sim --> allow["header(dashboard.php)"]
+```
+**Como usar o guard.php**:
+
+Em todas as páginas restritas do sistema a **primeira linha de código** após o `declare(strict_types=1)` será:
+
+```php
+required_once __DIR__ . "/src/guard.php";
+```
+
+Se a pessoa não estiver autenticada ou não tiver o perfil de acesso, ela é expulsa antes mesmo que qualuqer byte de HTML seja renderizado.
+
+

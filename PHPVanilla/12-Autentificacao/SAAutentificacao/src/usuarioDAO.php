@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-//Criação da Classa de Acesso aos dados da Tabela Usuários 
+//Criação da Classe de Acesso aos Dados da TAbela Usuários
 
 final class UsuarioDAO{
     //atributos
-    private PDO $pdo; // pegar as insformações da conexão com o Banco de dados
+    private PDO $pdo; // pegar as informações da conexão com o Banco de dados
 
-    //Toda calsse precisa de um construtor 
+    //Toda classe precisa de um construtor 
     //SNEPTS = são atalhos 
-    public function __construct()
+    public function __construct(PDO $pdo){
         $this->pdo = $pdo;
     }
 
@@ -42,5 +42,22 @@ final class UsuarioDAO{
         return $resultado ?: null;
     }
 
+    //Buscar um e-mail cadastrado -> Verificar se o email já está cadastrado 
+    public function emailExiste(String $email): bool{
+        //Busca apenas a coluna do email a aprtir do email digitado
+        $sql = "SELECT 1 FROM usuarios WHERE email = :email";
+        $stmt = $this->pdo->prepare($sql);
+        //Ajusta o Email digitado para minusculo e recorta os espaços em branco
+        $stmt->bindValue(":email", strtolower(trim($email)), PDO::PARAM_STR);
+        //executa a busca 
+        $stmt->execute();
+        //Se o email for encontrado retorna true se não retorna false 
+        // Se chama CAST para garantir que o retorno vai ser uma boleana
+        return (bool)$stmt->fetchColumn(); 
+
+        }
+        // esta faltando um update 
+
+        //E esta faltando um delete 
 }
-  
+

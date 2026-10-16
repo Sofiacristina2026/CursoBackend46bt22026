@@ -33,7 +33,6 @@ function aplicarDesconto(float &$preco, float $porcentagem): void {// 100 - 10%
 // ==========================================
 
 function gerarIniciais(string $nomeCompleto): string {
-    // Escreva sua lógica aqui!
     // Entradada da Função => "Maria Eduarda Pereira" => Saída: MEP
     $palavras = explode(" ",$nomeCompleto); // => ["Maria", "Eduarada", "Pereira"]
 

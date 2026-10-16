@@ -1,4 +1,5 @@
 ## 8. LISTA DE EXERCÍCIOS DE FIXAÇÃO E PRÁTICA
+data: 07/10/2026
 
 ### Parte A: Exercícios Teóricos de Fixação
 

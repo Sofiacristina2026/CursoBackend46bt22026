@@ -3,45 +3,75 @@ declare(strict_types=1);
 
 /**
  * Exemplo 1: Gerenciador de Ferramentas CLI com Prepared Statements.
- * Permite interagir via terminal para cadastrar e listar ferramentas de forma segura.
+ * Permite cadastrar e listar ferramentas pelo terminal.
  */
 
-// Inicializa a conexão PDO com banco SQLite em memória para testes
-$pdo = new PDO('sqlite::memory:');
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// Conecta ao banco de dados PostgreSQL.
+$host = 'localhost';
+$banco = 'operacao_crud';
+$usuario = 'postgres';
+$senha = 'aluno01';
 
-// Criação da tabela de ferramentas
-$pdo->exec("CREATE TABLE IF NOT EXISTS ferramentas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL,
-    sku TEXT NOT NULL
-)");
+$dsn = "pgsql:host=$host;port=5432;dbname=$banco";
+
+$pdo = new PDO($dsn, $usuario, $senha, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+]);
+
+// Cria a tabela de ferramentas caso ela não exista.
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS ferramentas (
+        id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        sku VARCHAR(50) NOT NULL
+    )
+");
 
 /**
- * Cadastra uma nova ferramenta utilizando Prepared Statement com parâmetros nomeados.
+ * Cadastra uma ferramenta usando Prepared Statement.
  */
-function cadastrarFerramenta(PDO $pdo, string $nome, string $sku): bool {
-    $sql = "INSERT INTO ferramentas (nome, sku) VALUES (:nome, :sku)";
+function cadastrarFerramenta(
+    PDO $pdo,
+    string $nome,
+    string $sku
+): bool {
+    $sql = "INSERT INTO ferramentas (nome, sku)
+            VALUES (:nome, :sku)";
+
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute([':nome' => $nome, ':sku' => $sku]);
+
+    return $stmt->execute([
+        ':nome' => $nome,
+        ':sku' => $sku
+    ]);
 }
 
 /**
- * Lista todas as ferramentas ativas no sistema de forma segura.
+ * Lista as ferramentas cadastradas.
  */
-function listarFerramentas(PDO $pdo): array {
-    $sql = "SELECT id, nome, sku FROM ferramentas";
+function listarFerramentas(PDO $pdo): array
+{
+    $sql = "SELECT id, nome, sku
+            FROM ferramentas
+            ORDER BY id";
+
     $stmt = $pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $stmt->fetchAll();
 }
 
-// Menu interativo simulado via CLI
-// (Em um ambiente real, utilizaria-se readline() em loop)
+// Exibe o resultado no terminal.
 echo "=== GERENCIADOR DE FERRAMENTAS CLI ===\n";
+
 cadastrarFerramenta($pdo, 'Chave de Fenda', 'SKU-001');
 cadastrarFerramenta($pdo, 'Martelo de Borracha', 'SKU-002');
 
 echo "\nListando ferramentas cadastradas:\n";
+
 foreach (listarFerramentas($pdo) as $ferramenta) {
-    echo "- ID: {$ferramenta['id']} | Nome: {$ferramenta['nome']} | SKU: {$ferramenta['sku']}\n";
+    echo "- ID: {$ferramenta['id']} | ";
+    echo "Nome: {$ferramenta['nome']} | ";
+    echo "SKU: {$ferramenta['sku']}\n";
 }

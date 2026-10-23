@@ -29,3 +29,9 @@ data: 07/10/2026
 
 9. **Impacto da LGPD:** De acordo com a Lei Geral de Proteção de Dados (LGPD), quais são as penalidades e impactos que uma organização pode sofrer caso ocorra vazamento de dados de clientes por falha de SQL Injection?
    **Resposta:** A organização pode sofrer medidas e sanções administrativas previstas na LGPD, como **advertência, multa simples de até 2% do faturamento da empresa no Brasil, limitada a R$ 50 milhões por infração, multa diária, bloqueio ou eliminação dos dados pessoais envolvidos**, entre outras medidas. Além disso, o vazamento pode causar prejuízos financeiros, danos à reputação e necessidade de comunicar o incidente às autoridades e aos titulares quando aplicável.
+
+Professor eu só não estou conseguindo abrir ele está dando erro de coexão com o postgress, eu tinha até feito o projeto no root . 
+Aonde está o meu erro ?
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)

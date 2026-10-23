@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-require_once 'conexao.php';
-require_once 'PecaDAO.php';
+const CONFIG_PATH = __DIR__ . "/config/database.ini";
+
+require_once __DIR__ . "/src/ConexaoBanco.php";
 
 $dao = new PecaDAO($pdo);
 $pecasAtivas = $dao->listarPaginado(5, 0);

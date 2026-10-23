@@ -1949,5 +1949,122 @@ flowchart TD
 >[!OBS]
 >`try/catch` é o mecanismo de captura de exceções do PHP. Ele permite que você trate erros de forma inteligente, mantendo a integridade do sistema e fornecendo feedback claro ao usuário.
 
+---
+
+### Semana 12 - Arquitetura MVC Artesanal
+### 23.10.2026 ###
+
+**Tema:** Pradrão Arquitetural MVC(Model-View-Controller) em BackEnd. Gestão de Dependências Composer, Especificações de Autoloading PSR-4, Resolução Automática de NamesSpace, Padrão DrontController, Roteador HTTP Artesanal e Injeção de Dados em Views. 
+
+#### **O fim do Código Espaguete**
+
+Quando encontramos um padrão de código desastroso e caótico, sem arquiteturas modernas de Desenvolvimento, usamos o termo `Código Espaguete`.
+
+Exemplo de Código Espaguete:
+
+```php
+<!-- ARQUIVO LEGADO: produtos.php (O PESADELO DO CÓDIGO ESPAGUETE) -->
+<?php
+// 1. Múltiplos includes manuais frágeis
+require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../classes/Produto.php';
+require_once __DIR__ . '/../classes/Sessao.php';
+require_once __DIR__ . '/../classes/Auditoria.php';
+
+// 2. Mistura de lógica de banco e processamento HTTP
+$pdo = Conexao::getInstancia();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = $_POST['nome'];
+    $stmt = $pdo->prepare("INSERT INTO produtos (nome) VALUES (?)");
+    $stmt->execute([$nome]);
+}
+$produtos = $pdo->query("SELECT * FROM produtos")->fetchAll();
+?>
+<!-- 3. HTML misturado com PHP procedural na mesma folha -->
+<html>
+<body>
+    <h1>Catálogo</h1>
+    <?php foreach($produtos as $p): ?>
+        <p><?= $p['nome'] ?></p>
+    <?php endforeach; ?>
+</body>
+</html>
+```
+
+**Os Problemas Críticos do Código Espaguete**
+
+1. *Acoplamento Máximo*: Se você mudar o layout visual, corre o risco de quebrar uma query SQL. Se alterar uma coluna do banco, precisa reescrever o arquivo vicual. 
+2. *Fragicilidade de Inclusões (`required_once`):* Se um arquivo for movido de pasta, todas as chamadas `required_once`quebram com erros fatais de arquivos não encontrados.
+3. *Exposição de Segurança*: Se os arquivos PHP estiverem na raiz acessível do servidor web, qualquer usuário malicioso pode tentar acessar scripts internos digitando `http://site.com/config/conexao.php`.
+
+```mermaid
+flowchart
+    subgraph Caótico ["Código Espaguete Tradicional (Desorganizado)"]
+            arq["produtos.php<br/> Consultas SQL Diretas<br/> HTML e Tags CSS<br/> Regras de Negócio<br/> 10x Require_once manuais"]
+    end
+
+    style Caótico fill: #fee2e2, stroke: #dc2626, stroke-width: 2px, color: #7f1d1d
+```
+
+#### **A Triade Model-View-Controller (MVC) no BackEnd
+
+O Padrão **MVC (Model-View-Controller)** é a arquitetura de software corporativa mais consagrada da hístoria da web. Seu Objetivo é separar as preocupações do sistema em **3 camadas bem definidas**:
+
+```mermaid
+flowchart TD
+
+    subgraph MVC ["Padrão Arquitetural MVC (Responsabilidade Única)"]
+        controller["Controller<br/>(Maestro do Fluxo)"]
+        model["Model<br/>(Regras de Negócio & Banco)"]
+        view["View<br/>(Apresentação Visual Limpa)"]
+
+        controller -->|"1. Pede dados"| model
+        model -->|"2. Devolve entidades"| controller
+        controller -->|"3. Injeta dados"| view
+    end
+
+    style controller fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81
+    style model fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style view fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f
+```
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Navegador do Usuário
+    participant FC as Front Controller (index.php)
+    participant Router as Roteador HTTP
+    participant Ctrl as ProdutoController
+    participant Model as Produto (Model)
+    participant BD as Banco de Dados (PostgreSQL)
+    participant View as View (listar.php)
+
+    Cliente->>FC: GET /produtos
+    FC->>Router: despachar("GET", "/produtos")
+    Router->>Ctrl: executar listar()
+    Ctrl->>Model: listarTodos()
+    Model->>BD: SELECT * FROM produtos...
+    BD-->>Model: Retorna registros relacionais
+    Model-->>Ctrl: Retorna array de entidades
+    Ctrl->>View: renderizar("produtos/listar", dados)
+    View-->>Cliente: Retorna HTML estruturado e sanitizado
+```
+
+1. **Model (Camada de Modelo de Negócio e Dados)**
+- **O que Faz**: Representa as entidade do mundo real e gerencia a lógica de dados, persistência e regras de negócio
+- **O que sabe**: Sabe como conectar ao banco de dados, executar Prepared Statement, validar se um preço é positivo (RN) e calcular totais de estoque(RN)
+- **O que NUNCA faz**: Nunca emite comando `echo`, nunca gera tag HTML e nunca lê dados da superglobal `$_POST` ou `$_GET`.
+
+2. **View (Camada de Visualização e Apresentação)**
+- **O que Faz**: Renderiza a interface gráfica do usuário(geralmente HTML, CSS, JSON).
+- **O que sabe**: Recebe variáveis simples enviadas pelo Controller e as formata visualmente, aplicando sanitizção ativa contra XSS(`htmlspecialchars`)
+- **O que NUNCA faz**: Nunca executa consultas SQL, nunca faz regras de negócios complexa e nunca redireciona requisições via `header()`
+
+1. **Controller (Camada de Controle e Orquestração)**
+- **O que Faz**: Atua como o maestro da aplicação. REcebe a requisição do usuário, valida as entradasm aciona a camada Model para obter ou persistir informações e seleciona a View correspondente para renderizar a resposta
+- **O que sabe**: Sabe qual Model chamar e qual View devolver.
+- **O que NUNCA faz**: Não deve conter regras contábeis complexas (elas pertencem ao Model) e não deve escrever HTML diretamente.
+
+
 
 

@@ -1,6 +1,6 @@
 ### Parte A: Questôes Téoricas de Fixaçõa ###
 
-1. A diferença entre Procedural vs. OO: Os três principais riscos de utilizar apenas arrays associativos e scripts procedurais em regras financeiras são a falta de segurança dos dados, a dificuldade de manutenção do código e o maior risco de erros financeiros. Isso acontece porque diferentes partes do sistema podem alterar saldos sem ver ou checar as regras necessárias. A Programação Orientada a Objetos (POO) ajuda assim a organizar o código, proteger os dados e centralizar as regras financeiras.
+1. A diferença entre Procedural vs. OO: Os principais riscos de utilizar apenas arrays associativos e scripts procedurais em regras financeiras são a falta de segurança dos dados, a dificuldade de manutenção do código e o maior risco de erros financeiros. Isso acontece porque diferentes partes do sistema podem alterar saldos sem ver ou checar as regras necessárias. A Programação Orientada a Objetos (POO) ajuda assim a organizar o código, proteger os dados e centralizar as regras financeiras.
 
 2. Ciclo de Vida do Objeto: Quando o comando new ContaCorrente(...) é executado, o PHP cria um objeto na memória Heap do servidor, onde ficam armazenados seus atributos. O método __construct() é executado automaticamente durante a criação do objeto e serve para inicializar seus atributos com os valores recebidos.
 

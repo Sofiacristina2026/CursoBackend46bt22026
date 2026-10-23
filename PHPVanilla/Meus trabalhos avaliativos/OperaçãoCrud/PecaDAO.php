@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 // Importa a conexão PDO centralizada
-require_once __DIR__ . '/conexao.php';
+const CONFIG_PATH = __DIR__ . "/config/database.ini";
+
+require_once __DIR__ . "/src/ConexaoBanco.php";
 
 /**
  * Classe PecaDAO (Data Access Object)

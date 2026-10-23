@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+
+const CONFIG_PATH = __DIR__ . "/config/database.ini";
+
+require_once __DIR__ . "/src/ConexaoBanco.php"; 
+
 /**
  * Exemplo 4: Controle de Estoque com Transações ACID.
  * Garante consistência atômica nas operações de entrada e saída.

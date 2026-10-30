@@ -1,6 +1,7 @@
-
 <?php
 declare(strict_types=1);
+
+require_once __DIR__ . '/../UsuarioDAO.php';
 
 // Cria a conexão com o PostgreSQL.
 function conectar(): PDO

@@ -56,4 +56,9 @@ Exercicios:
 
  ex05_log_acessos.php
 
+### Testando:
+
+oii Diogo tdu bem ? Com está atividade eu estou tendo bastante dificuldade para rodar . Ele fica colocando erro na linha 4, que seria do caminho sendo que ele está correto 
+
+![alt text](image.png)
  

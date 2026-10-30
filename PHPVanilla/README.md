@@ -2065,6 +2065,94 @@ sequenceDiagram
 - **O que sabe**: Sabe qual Model chamar e qual View devolver.
 - **O que NUNCA faz**: Não deve conter regras contábeis complexas (elas pertencem ao Model) e não deve escrever HTML diretamente.
 
+#### **O Gerenciador Composer e o AutoLoad PSR-4**
+
+Imagine um projeto coroporativo moderno com mais de 300 classes. ter que escrever 300 linhas de `required_onde`em cada arquivo ternaria o desenvolvimento inviável. É aqui que entra o **Composer** e a especificação  **PSR-4**
+
+```mermaid
+flowchart LR
+    comp["Composer<br/>(composer.json)"] -->|"composer dump-autoload"| auto["vendor/autoload.php"]
+    
+    codigo["use App\\Models\\Produto;<br/>$p = new Produto();"] -->|"PHP intercepta a chamada"| auto
+    auto -->|"Mapeia 'App\\' para 'src/'"| disco["Carrega do disco:<br/>src/Models/Produto.php"]
+
+    style comp fill:#fed7aa,stroke:#ea580c,stroke-width:2px,color:#7c2d12
+    style auto fill:#bbf7d0,stroke:#16a34a,stroke-width:2px,color:#14532d
+    style disco fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81
+```
+
+**O que é o Composer?**
+
+O **Composer** é o gerenciador de dependências oficial da linguagem PHP. Ele desempenha duas funções vitais:
+1. Baixar bibliotecas de terceiros a partir do repositório central Packagist (como bibliotecas de envio de e-mails, geradores de PDF e frameworks).
+2. **Gerar o Autoloader Automático:** O Composer lê as classes criadas por você no seu projeto e as disponibiliza automaticamente no código sem a necessidade de nenhum `require`.
+
+**As Especificações do PSR-4 (PHP Stadart Recommendation 4)**:
+
+A especificação internacional **PSR-4** dita que:
+> *O namespace de uma classe deve espelhar exatamente a estrutura de diretórios no disco físico onde o arquivo está gravado.*
+
+Exemplo prático:
+- Se declaramos o namespace: `namespace App\Controllers; class ProdutoController {}`
+- E configuramos no Composer que o prefixo `"App\\"` aponta para a pasta `"src/"`.
+- O PHP localizará fisicamente o arquivo em: `src/Controllers/ProdutoController.php`.
+
+**Como Configurar o composer.json**
+
+```json
+{
+    "name": "senai/supply-mvc",
+    "description": "Sistema de Gestão de Insumos Industriais",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
+```
+
+> [!IMPORTANT]
+> **Comando Mandatório de Regeneração:**  
+> Sempre que você criar o arquivo `composer.json` ou alterar a estrutura de namespaces, execute no terminal do VS Code:  
+> `composer dump-autoload -o`  
+> O parâmetro `-o` gera o mapa de classes otimizado para máxima performance.
+
+
+#### **O Padrão Front Controller e Roteamento HTTP**
+
+Em aplicações PHP procedurais antigas, a URL do navegador correspondia exatamente a um arquivo gravado no disco:
+- `http://site.com/contato.php` ➔ Carrega o arquivo `contato.php`.
+- `http://site.com/admin/relatorio.php` ➔ Carrega o arquivo `admin/relatorio.php`.
+
+Em arquiteturas corporativas modernas (incluindo **Laravel**, **Symfony** e **Spring Boot**), essa correspondência direta não existe mais. Em vez disso, utilizamos o **Padrão Front Controller**.
+
+```mermaid
+flowchart TD
+    req1["GET /"] --> fc["Ponto Único de Entrada:<br/>public/index.php"]
+    req2["GET /produtos"] --> fc
+    req3["POST /produtos/salvar"] --> fc
+
+    fc --> router["Roteador Artesanal<br/>(App\\Core\\Roteador)"]
+
+    router -->|"Combina Rota"| c1["HomeController::index()"]
+    router -->|"Combina Rota"| c2["ProdutoController::listar()"]
+    router -->|"Combina Rota"| c3["ProdutoController::salvar()"]
+    router -.->|"Não encontra"| c4["HTTP 404 Not Found"]
+
+    style fc fill:#fed7aa,stroke:#ea580c,stroke-width:2px,color:#7c2d12
+    style router fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+    style c4 fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
+```
+
+**Por que isolar o diretório `public/`?**
+
+Por razões estritas de **Segurança da Informação**:
+1. O servidor web aponta sua raiz estritamente para a pasta `public/`.
+2. As pastas `src/`, `config/`, `vendor/` e os arquivos `.ini` e `.env` ficam **um nível acima da raiz pública**.
+3. Mesmo que um atacante tente digitar diretamente a URL de um arquivo sensível (ex.: `http://site.com/config/database.ini`), o servidor web bloqueia o acesso, pois o arquivo não reside na pasta pública.
+
+
 
 
 

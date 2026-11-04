@@ -17,7 +17,7 @@ if (isset($_SESSION['ultimo_acesso'])
     && time() - $_SESSION['ultimo_acesso'] > 900) {
     session_unset();
     session_destroy();
-    header('Location: ../login.php?expirada=1');
+    header('Location: ../login.php');
     exit;
 }
 
@@ -25,7 +25,7 @@ $_SESSION['ultimo_acesso'] = time();
 
 // Verifica se o usuário está autenticado.
 if (!isset($_SESSION['usuario'])) {
-    header('Location: ../login.php');
+   header('Location: /login.php');
     exit;
 }
 

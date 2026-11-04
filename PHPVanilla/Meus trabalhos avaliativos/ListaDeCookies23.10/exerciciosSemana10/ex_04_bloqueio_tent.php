@@ -70,8 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['tentativas_login'] = 0;
             $_SESSION['bloqueado_ate'] = 0;
 
-            header('Location: ../relatorios_gerenciais.php');
-            exit;
+            header('Location: ../relatorios.php');
         }
 
         $_SESSION['tentativas_login']++;

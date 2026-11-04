@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/exercicios_semana10/ex03_rbac_guard.php';
+require_once __DIR__ . '/exerciciosSemana10/ex_03_rbac_guard.php';
 
 // Exige perfil de administrador.
 verificarPermissao('ADMIN');

@@ -1,9 +1,10 @@
+
 <?php
 declare(strict_types=1);
 
 require_once __DIR__ . '/../UsuarioDAO.php';
 
-// Verifica se a senha possui todos os requisitos.
+// Verifica se a senha atende aos requisitos.
 function senhaValida(string $senha): bool
 {
     return strlen($senha) >= 8

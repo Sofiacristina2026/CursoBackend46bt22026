@@ -1,15 +1,13 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../UsuarioDAO.php';
-
 // Cria a conexão com o PostgreSQL.
 function conectar(): PDO
 {
-    $host = 'localhost';
+    $host = '127.0.0.1';
     $banco = 'exercicios_semana10';
     $usuario = 'postgres';
-    $senha = 'SUA_SENHA';
+    $senha = '1234';
 
     $dsn = "pgsql:host=$host;dbname=$banco";
 
@@ -19,3 +17,4 @@ function conectar(): PDO
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 }
+

@@ -1,28 +1,22 @@
+
 <?php
 declare(strict_types=1);
 
-// Recebe uma senha pelo terminal.
-$senha = readline('Digite uma senha para analisar: ');
+// Recebe a senha pelo terminal.
+$senha = readline('Digite uma senha: ');
 
-// Gera o hash usando Argon2id.
+// Gera o hash utilizando Argon2id.
 $hash = password_hash($senha, PASSWORD_ARGON2ID);
 
-// Separa os componentes do hash.
+// Separa os blocos do hash.
 $partes = explode('$', $hash);
 
-echo "\n===== INSPETOR DE HASH =====\n";
-echo "Hash completo: $hash\n";
-echo "Algoritmo: {$partes[1]}\n";
-echo "Versão: " . explode('=', $partes[2])[1] . "\n";
-
-// Separa os custos de memória, tempo e paralelismo.
-$parametros = explode(',', $partes[3]);
-
-echo "Custo de memória: {$parametros[0]}\n";
-echo "Custo de tempo: {$parametros[1]}\n";
-echo "Paralelismo: {$parametros[2]}\n";
-
-echo "Salt codificado em Base64: {$partes[4]}\n";
-echo "Hash final: {$partes[5]}\n";
-
-echo "\nAnálise concluída!\n";
+if ($partes[1] === 'argon2id') {
+    echo "\nALGORITMO: {$partes[1]}\n";
+    echo "VERSÃO: {$partes[2]}\n";
+    echo "CUSTOS: {$partes[3]}\n";
+    echo "SALT CODIFICADO: {$partes[4]}\n";
+    echo "HASH FINAL: {$partes[5]}\n";
+} else {
+    echo "Formato de hash não reconhecido.\n";
+}

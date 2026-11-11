@@ -21,7 +21,7 @@ class ClienteController extends Controller
     }
 
     /**
-     * Exibir o formulário pra cadastro de novos clientes 
+     * Exibir o formulário pRA CADASTRO DE NOVOS CLIENTES
      */
     public function create(): View
     {
@@ -43,7 +43,7 @@ class ClienteController extends Controller
         ]);
 
         Cliente::create($dados + ["status" => "ATIVO"]);
-        return redirect()->route("cliente.index")->with("sucesso", "Cliente cadastrado com sucesso");
+        return redirect()->route("clientes.index")->with("sucesso", "Cliente cadastrado com sucesso");
     }
 
     /**
@@ -57,7 +57,7 @@ class ClienteController extends Controller
 
         //se econtrado => abre uma tela com as info do cliente
         return view("clientes.show", [
-            "clientes"  => $cliente,
+            "cliente"  => $cliente,
             "titulo"    => "Ficha Técnica: {$cliente["razao_social"]}"
         ]);
     }
@@ -69,7 +69,7 @@ class ClienteController extends Controller
     {
         $cliente = Cliente::findOrFail($id);
 
-        return view("cliente.edit", [
+        return view("clientes.edit", [
             "cliente"   => $cliente,
             "titulo"    => "Editar Parcero: {$cliente["razao_social"]}"
         ]);
@@ -86,7 +86,7 @@ class ClienteController extends Controller
         ]);
 
         Cliente::findOrFail($id)->update($dados);
-        return redirect()->route("cliente.show", $id)->with("sucesso", "Dados atualizados com sucesso!");
+        return redirect()->route("clientes.show", $id)->with("sucesso", "Dados atualizados com sucesso!");
     }
 
     /**
@@ -95,8 +95,19 @@ class ClienteController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         Cliente::findOrFail($id)->delete();
-        return redirect()->route("cliente.index")->with("sucesso", "Parceiro Removido do Sistema");
+        return redirect()->route("clientes.index")->with("sucesso", "Parceiro Removido do Sistema");
     }
 
     //Filtro -: Server Side por setor
+    public function filtrarPorSetor(?string $setor = null): View {
+        $consulta = Cliente::query();
+        if($setor !== null) {
+            $consulta->where("setor", "like", $setor);
+        }
+        return view("clientes.index", [
+            "cliente"   => $consulta->get(),
+            "titulo"    => $setor ? "Setor: ". ucfirst($setor) : "Todos os Setores"
+        ]);
+    }
+
 }

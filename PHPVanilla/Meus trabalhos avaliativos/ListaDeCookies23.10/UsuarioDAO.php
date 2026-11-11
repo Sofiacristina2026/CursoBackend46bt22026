@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 require_once __DIR__ . '/conexao.php';
 
 // Organiza as operações de cadastro e consulta de usuários.
@@ -31,6 +32,9 @@ class UsuarioDAO
         $sql = 'SELECT * FROM usuarios WHERE email = :email';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['email' => $email]);
-        return $stmt->fetch();
+
+        $resultado = $stmt->fetch();
+
+        return is_array($resultado) ? $resultado : false;
     }
 }

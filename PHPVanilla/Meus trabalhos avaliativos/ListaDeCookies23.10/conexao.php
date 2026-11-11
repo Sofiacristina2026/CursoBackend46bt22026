@@ -4,7 +4,7 @@ declare(strict_types=1);
 // Cria a conexão com o PostgreSQL.
 function conectar(): PDO
 {
-    $host = '127.0.0.1';
+    $host = '192.168.10.103';
     $banco = 'exercicios_semana10';
     $usuario = 'postgres';
     $senha = '1234';

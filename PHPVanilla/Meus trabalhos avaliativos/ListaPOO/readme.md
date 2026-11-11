@@ -67,4 +67,4 @@ Deu certo
 #### Exercício 5:
 ![alt text](image-4.png)
 
-Todos derão certo na hora de rodar a unica coisa é que no final eles ficaram vermelinhos com 2 há três eros, por isso eu fui na aba de problems no terminal, pra tentar corrigir por lá e descobri que era o . Eu fiz baseado nos ultímos projetos. 
+

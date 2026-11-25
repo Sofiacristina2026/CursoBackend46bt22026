@@ -1,0 +1,16 @@
+{
+  "name": "senai/supply",
+  "description": "Sistema SENAI Supply MVC",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Desenvolvedor Backend SENAI"
+    }
+  ],
+  "require": {}
+}

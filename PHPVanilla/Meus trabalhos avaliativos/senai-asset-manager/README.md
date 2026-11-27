@@ -123,5 +123,4 @@ Tudo fica registrado em `logs/app.log`, fora da pasta pública. Cada linha tem:
 ---
 
 ## Créditos
-
 Projeto desenvolvido para a unidade curricular de Programação Back-End (1º Semestre), Semana 12 — Arquitetura MVC Artesanal, RBAC e Auditoria.

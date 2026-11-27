@@ -54,6 +54,7 @@ Ele rodou certinho eu só tive que mudar, porque ele não estava respondendo o e
 
 #### Atividade 2 :
 ![alt text](image-1.png)
+
 Retornou o código de status e o catálgo serializado em JSON 
 
-> O resto das atividades também rodaraam como esparado 
+> O resto das atividades também rodaram como esparado 

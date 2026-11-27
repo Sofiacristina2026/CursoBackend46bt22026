@@ -23,7 +23,7 @@
         .alerta-sucesso { background: #14532d; border: 1px solid #16a34a; color: #bbf7d0; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
     </style>
 </head>
-<body>
+<body
 <div class="container">
     @if(session('sucesso'))
         <div class="alerta-sucesso">{{ session('sucesso') }}</div>

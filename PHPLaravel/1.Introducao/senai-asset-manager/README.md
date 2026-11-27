@@ -208,15 +208,3 @@ e dentro do diretório crie os arquivos
    *Restauração:* Descomente a diretiva `@csrf` e recarregue.
 
 
----
-
-## Criar o Módulo de Produtos
-
-class produto {
-   atributos
-      nome
-      fabricante
-      quantidade
-      preco
-
-}

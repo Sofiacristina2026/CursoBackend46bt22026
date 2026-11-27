@@ -1,0 +1,7 @@
+[27/11/2026 11:48:22] GET /produtos - IP: 200.135.80.100
+[27/11/2026 11:49:38] GET /produtos - IP: ::1
+[27/11/2026 11:49:47] GET /produtos/detalhe/1 - IP: ::1
+[27/11/2026 11:49:47] GET /produtos/detalhe/99 - IP: ::1
+[27/11/2026 11:49:47] GET /api/produtos - IP: ::1
+[27/11/2026 11:49:55] GET /api/produtos - IP: ::1
+[27/11/2026 12:05:44] GET /produtos - IP: 200.135.80.100

@@ -1,0 +1,17 @@
+{
+  "name": "app/exercicios-semana12",
+  "description": "Exercícios práticos de laboratório - Semana 12 (MVC em PHP puro)",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    },
+    "files": [
+      "src/Core/helpers.php"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

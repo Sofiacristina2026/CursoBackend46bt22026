@@ -57,4 +57,3 @@ Este projeto contem as solucoes da Parte B do laboratorio, desenvolvidas em Lara
 - `routes/web.php` - rotas da aplicacao
 - `routes/console.php` - comando `senai:status`
 
-A documentacao detalhada de cada exercicio, com saidas reais e o checklist de qualidade, encontra-se no `readme.md` da raiz do repositorio.

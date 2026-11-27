@@ -1,220 +1,127 @@
-Parte A – Questões teóricas
-1. Evolução Arquitetural
+# SENAI Supply — Sistema de Estoque
 
-Na construção do MVC artesanal, aprendi a separar as responsabilidades do sistema entre Model, View e Controller. Isso facilitou a compreensão do Laravel, pois ele utiliza essa mesma organização, mas oferece ferramentas prontas para facilitar o desenvolvimento e a manutenção do código.
+Sistema de gerenciamento de estoque para a fábrica do SENAI. Feito em PHP com arquitetura MVC, login seguro, controle de quem pode fazer o quê (RBAC), estoque com transação segura e registro de tudo em um arquivo de log.
 
-2. A Nova Arquitetura do Laravel 11
+---
 
-No Laravel 11, a estrutura foi simplificada em relação às versões anteriores. O arquivo bootstrap/app.php passou a ser o ponto central de inicialização e configuração da aplicação, reunindo configurações que antes ficavam distribuídas em vários arquivos.
+## O que o sistema faz
 
-3. Padrão 12-Factor App
+- **Login e logout**: senhas são guardadas de forma segura (BCrypt, nunca em texto puro).
+- **Permissões (RBAC)**: existem três perfis — admin, gestor e almoxarife. Cada um pode acessar apenas o que tem permissão. Quem não tem acesso recebe erro 403.
+- **Estoque seguro**: entradas e saídas usam transação ACID. Se não tiver produto suficiente, a saída é desfeita (rollback) e o estoque não fica negativo.
+- **Log de auditoria**: tudo que acontece no sistema fica gravado em `logs/app.log` com data, hora, IP, tipo de aviso e detalhes.
+- **Proteção contra ataques**: CSRF em formulários, senha de sessão regenerada no login, variáveis escapadas nas telas (contra XSS) e consultas preparadas no banco (contra SQL Injection).
 
-Gravar senhas diretamente no arquivo config/database.php é um risco porque as credenciais podem ser expostas quando o código é compartilhado pelo Git. O arquivo .env permite armazenar essas informações separadamente, protegendo os dados de acesso ao banco.
+---
 
-4. O Papel da APP_KEY
+## Como é organizada a pasta
 
-Alterar a APP_KEY de uma aplicação em produção pode causar problemas na descriptografia de dados que foram protegidos com a chave antiga, como cookies e sessões. Isso pode fazer com que usuários percam suas sessões e dados criptografados deixem de ser acessíveis.
-
-5. Isolamento de Diretórios
-
-O servidor deve apontar somente para a pasta public/ porque ela contém os arquivos que podem ser acessados publicamente. Isso protege arquivos internos do projeto, como configurações, credenciais, código-fonte e o arquivo .env.
-
-6. Artisan CLI
-
-O comando php arquivo.php executa diretamente um arquivo PHP. Já o php artisan utiliza uma ferramenta própria do Laravel que oferece comandos para criar arquivos, executar migrações, iniciar o servidor e administrar a aplicação.
-
-7. O Arquivo .env.example
-
-O .env.example serve como modelo de configuração para outros desenvolvedores. Mantê-lo atualizado facilita a instalação do projeto em outros computadores, pois informa quais variáveis de ambiente precisam ser configuradas, sem expor senhas reais.
-
-8. Motor de Templates Blade
-
-A diretiva {{ $variavel }} realiza o escape automático do conteúdo, ajudando a prevenir ataques XSS. Já {!! $variavel !!} exibe o conteúdo sem esse tratamento, podendo permitir a execução de códigos HTML ou JavaScript maliciosos.
-
-9. Responsabilidade do Controller
-
-Um Controller deve ter métodos curtos para facilitar a leitura, manutenção e organização do sistema. As consultas ao banco e as regras de negócio devem ficar em suas respectivas camadas, evitando que o Controller acumule muitas responsabilidades.
-
-10. A Ferramenta Tinker
-
-O comando php artisan tinker abre um terminal interativo para executar comandos PHP dentro do ambiente Laravel. Ele permite testar modelos, consultar configurações, criar objetos e verificar resultados sem precisar criar um arquivo PHP para cada teste.
-
-#### Para começar o código
-### Passo 1 – Acessar a pasta de trabalhos
-Primeiramente, abri o terminal do VS Code e naveguei até a pasta onde ficam armazenados meus trabalhos de PHP.
-Utilizei o comando:
-
-```php
-cd ..
 ```
-Esse comando permitiu voltar um diretório para acessar a localização correta do projeto.
-
-### Passo 2 – Verificar o Composer
-Utilizei o comando:
-
-```powershell
-composer --version
-```
-O objetivo foi verificar se o Composer estava instalado e disponível no terminal.
-
-### Passo 3 – Criar o projeto Laravel 11
-Executei o comando:
-
-```powershell
-composer create-project laravel/laravel senai-asset-manager "^11.0"
+senai-asset-manager/
+├── public/
+│   └── index.php          # Único ponto de entrada (Front Controller)
+├── src/
+│   ├── Core/              # Coração do sistema (banco, logger, guard, roteador, csrf)
+│   ├── Models/            # Regras de negócio (usuário, produto, movimentação)
+│   ├── Controllers/       # Controladores (login, painel, produtos, estoque)
+│   └── Views/             # Telas HTML (login, painel, catálogo, entrada/saída)
+├── database/
+│   └── schema.sql         # Script para criar o banco no PostgreSQL
+├── logs/
+│   └── app.log            # Arquivo de auditoria (criado automaticamente)
+├── vendor/                # Gerado pelo Composer (não enviar ao Git)
+├── .env                   # Configurações (não enviar ao Git)
+├── .env.example           # Exemplo de configurações
+├── composer.json          # Dependências e autoload PSR-4
+└── README.md
 ```
 
-Esse comando realiza o download e a criação de uma aplicação utilizando o Laravel na versão 11.
+---
 
-### Passo 4 – Acessar a pasta do projeto
-Depois da criação, entrei na pasta utilizando:
+## Como instalar e rodar
 
-```powershell
-cd senai-asset-manager
+### 1. Baixe o projeto
+Copie a pasta do projeto para o seu computador.
+
+### 2. Configure o banco de dados
+Você precisa do PostgreSQL instalado.
+
+Crie um banco chamado `senai_supply` e rode o script:
+
+```bash
+psql -U postgres -d senai_supply -f database/schema.sql
 ```
 
-### Passo 5 – Instalar as dependências
-Executei:
+Isso cria as tabelas `usuarios`, `produtos` e `movimentacoes_estoque`, e cadastra 3 usuários de teste:
 
-```powershell
-composer install
+| E-mail | Senha | Perfil |
+|--------|-------|--------|
+| admin@senai.local | admin123 | admin |
+| gestor@senai.local | gestor123 | gestor |
+| almoxarife@senai.local | almox123 | almoxarife |
+
+### 3. Instale as dependências
+No terminal, dentro da pasta do projeto:
+
+```bash
+composer dump-autoload -o
 ```
 
-Esse comando instalou td que eu precisava para o funcionamento do Laravel, criando a pasta `vendor` e o arquivo `vendor/autoload.php`.
+Isso prepara o carregamento automático das classes (PSR-4).
 
-### Passo 6 – Verificar a instalação
-Para verificar se a aplicação estava funcionando corretamente, executei:
+### 4. Ajuste as configurações
+Copie o arquivo de exemplo:
 
-```php
-php artisan about
-```
-Esse comando apresenta informações sobre a aplicação, incluindo sua versão, ambiente e configurações.
-
-### Passo 7 – Iniciar o servidor local
-Por último, utilizei:
-
-```powershell
-php artisan serve
-```
-Esse comando inicia um servidor local para permitir o acesso à aplicação pelo navegador.
-
-## 2. Passo a passo da instalação
-
-### Passo 1 – Acessar a pasta de trabalhos
-
-Primeiramente, abri o terminal do VS Code e naveguei até a pasta onde ficam armazenados meus trabalhos de PHP.
-
-Utilizei o comando:
-
-```powershell
-cd ..
+```bash
+cp .env.example .env
 ```
 
-Esse comando permitiu voltar um diretório para acessar a localização correta do projeto.
+Abra o `.env` e coloque a senha do seu PostgreSQL em `DB_PASSWORD`.
 
-### Passo 2 – Verificar o Composer
-
-Utilizei o comando:
-
-```powershell
-composer --version
+### 5. Inicie o servidor
+```bash
+php -S localhost:8000 -t public
 ```
 
-O objetivo foi verificar se o Composer estava instalado e disponível no terminal.
+Acesse no navegador: `http://localhost:8000`
 
-O Composer é uma ferramenta responsável por gerenciar as dependências e bibliotecas utilizadas em projetos PHP.
+---
 
-### Passo 3 – Criar o projeto Laravel 11
+## Telas do sistema
 
-Executei o comando:
+- **`/login`** — Entrar no sistema (público)
+- **`/dashboard`** — Painel com resumo do estoque (qualquer usuário logado)
+- **`/produtos`** — Catálogo de produtos (gestor, almoxarife, admin)
+- **`/movimentacoes`** — Histórico de entradas e saídas (gestor, almoxarife, admin)
+- **`/movimentacoes/entrada`** — Registrar entrada de produto
+- **`/movimentacoes/saida`** — Registrar saída de produto
+- **`/logout`** — Sair do sistema
 
-```powershell
-composer create-project laravel/laravel senai-asset-manager "^11.0"
-```
+---
 
-Esse comando realiza o download e a criação de uma aplicação utilizando o Laravel na versão 11.
+## Segurança em resumo
 
-### Passo 4 – Acessar a pasta do projeto
+- Senhas com `password_hash()` (BCrypt) e verificadas com `password_verify()`.
+- Sessão regenerada ao logar (`session_regenerate_id`).
+- Token CSRF em todo formulário POST.
+- Todas as palavras mostradas na tela usam `htmlspecialchars()` (contra XSS).
+- Consultas ao banco usam `PDO` com prepared statements (contra SQL Injection).
+- Guards RBAC bloqueiam acesso indevido com HTTP 403.
+- Logs gravados com trava atômica (`LOCK_EX`) fora da pasta pública.
 
-Depois da criação, entrei na pasta utilizando:
+---
 
-```powershell
-cd senai-asset-manager
-```
+## Logs de auditoria
 
-### Passo 5 – Instalar as dependências
+Tudo fica registrado em `logs/app.log`, fora da pasta pública. Cada linha tem:
+- Data e hora
+- Nível (INFO, AVISO, ERRO)
+- IP do usuário
+- Mensagem
+- Contexto em JSON
 
-Executei:
+---
 
-```powershell
-composer install
-```
+## Créditos
 
-Esse comando instalou as bibliotecas necessárias para o funcionamento do Laravel, criando a pasta `vendor` e o arquivo `vendor/autoload.php`.
-
-### Passo 6 – Verificar a instalação
-
-Para verificar se a aplicação estava funcionando corretamente, executei:
-
-```powershell
-php artisan about
-```
-
-Esse comando apresenta informações sobre a aplicação, incluindo sua versão, ambiente e configurações.
-
-### Passo 7 – Iniciar o servidor local
-
-Por último, utilizei:
-
-```powershell
-php artisan serve
-```
-
-Esse comando inicia um servidor local para permitir o acesso à aplicação pelo navegador.
-
-## 3. Erros encontrados e soluções
-
-### Erro 1 – Arquivo Artisan não encontrado
-
-**Mensagem apresentada:**
-
-```text
-Could not open input file: artisan
-```
-
-**Motivo:**
-
-O terminal estava em uma pasta que não continha a estrutura completa de um projeto Laravel. Inicialmente, a pasta possuía apenas o arquivo `readme.md`.
-
-**Solução:**
-
-Foi necessário criar a aplicação Laravel 11 utilizando o Composer e acessar a pasta correta do projeto.
-
-### Erro 2 – Arquivo vendor/autoload.php não encontrado
-
-**Mensagem apresentada:**
-
-```text
-Failed opening required 'vendor/autoload.php'
-```
-
-**Motivo:**
-
-O arquivo `artisan` já existia, porém as dependências do projeto ainda não estavam instaladas corretamente. Por isso, o Laravel não conseguia localizar o arquivo responsável pelo carregamento automático das bibliotecas.
-
-**Solução:**
-
-Executei o comando:
-
-```powershell
-composer install
-```
-
-Após a instalação das dependências, o arquivo `vendor/autoload.php` foi disponibilizado e o erro foi resolvido.
-
-
->Antes dos exercícios, precisamos criar o Model Ativo, porque ele será utilizado no comando Artisan e no Tinker.
-
-```php
-php artisan make:model Ativo -m
-```
+Projeto desenvolvido para a unidade curricular de Programação Back-End (1º Semestre), Semana 12 — Arquitetura MVC Artesanal, RBAC e Auditoria.

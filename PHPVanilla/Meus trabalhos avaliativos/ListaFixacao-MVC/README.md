@@ -57,4 +57,4 @@ Ele rodou certinho eu só tive que mudar, porque ele não estava respondendo o e
 
 Retornou o código de status e o catálgo serializado em JSON 
 
-> O resto das atividades também rodaram como esparado 
+> O resto das atividades também rodaram como esparado até então  
